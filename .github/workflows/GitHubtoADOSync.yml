@@ -1,0 +1,19 @@
+name: Run GitHub to ADO Sync with PowerShell
+
+on:
+  workflow_dispatch:
+  
+jobs:
+  build:
+    runs-on: windows-2019
+    steps:
+      - name: Check out repo        
+        uses: actions/checkout@v2
+      - run: |
+           $ListObject = GC -Path "$($env:GITHUB_WORKSPACE)\GitHubRepoList.json" | ConvertFrom-Json
+           foreach ($object in $ListObject.RepoList){
+            write-host "--------------- Current syncing for repo $($object.GitHubRepoName)----------------------------------"
+            Set-Location $($env:GITHUB_WORKSPACE)
+             .\SyncGitHubtoADO.ps1 -GitHubSourcePAT ${{ secrets.GITHUBSOURCEPAT }} -ADODestinationPAT ${{ secrets.ADODESTINATIONPAT }} -GitHubRepoName $($object.GitHubRepoName)  -GitHubCloneURL $($object.GitHubCloneURL)  -ADOCloneURL  $($object.ADOCloneURL)
+            write-host "---------------------------------------------------------------------------------------------------"
+           }
