@@ -14,6 +14,6 @@ jobs:
            foreach ($object in $ListObject.RepoList){
             write-host "--------------- Current syncing for repo $($object.GitHubRepoName)----------------------------------"
             Set-Location $($env:GITHUB_WORKSPACE)
-             .\SyncGitHubtoADO.ps1 -GitHubSourcePAT ${{ secrets.GITHUBSOURCEPAT }} -ADODestinationPAT ${{ secrets.ADODESTINATIONPAT }} -GitHubRepoName $($object.GitHubRepoName)  -GitHubCloneURL $($object.GitHubCloneURL)  -ADOCloneURL  $($object.ADOCloneURL)
+             .\SyncGitHubtoADO.ps1 -GitHubSourcePAT ${{ secrets.GITHUBSOURCEPAT }} -ADODestinationPAT ${{ secrets.ADODESTINATIONPAT }} -AzureRepoName $($object.AzureRepoName)  -GitHubCloneURL $($object.GitHubCloneURL)  -ADOCloneURL  $($object.ADOCloneURL)
             write-host "---------------------------------------------------------------------------------------------------"
            }
