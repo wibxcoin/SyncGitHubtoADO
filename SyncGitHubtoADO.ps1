@@ -1,9 +1,9 @@
 param(
      [Parameter()]
-     [string]$GitHubDestinationPAT,
+     [string]$ADODestinationPAT,
  
      [Parameter()]
-     [string]$ADOSourcePAT,
+     [string]$GitHubSourcePAT,
      
      [Parameter()]
      [string]$GitHubRepoName,
