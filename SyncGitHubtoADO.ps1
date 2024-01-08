@@ -6,7 +6,7 @@ param(
      [string]$GitHubSourcePAT,
      
      [Parameter()]
-     [string]$GitHubRepoName,
+     [string]$AzureRepoName,
      
      [Parameter()]
      [string]$ADOCloneURL,
