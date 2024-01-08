@@ -63,10 +63,24 @@ git push secondary --all -f
 Write-Output '**Azure Devops repo synced with Github repo**'
 Set-Location $stageDir
 
-# Tente remover o diretório
-try {
-    Remove-Item -Path $githubDir -Recurse -force
-} catch {
-    Write-Host "Erro ao tentar remover o diretório: $_"
+# Tente remover o diretório com retentativas
+$retryCount = 0
+$maxRetries = 3
+$delaySeconds = 5
+while ($true) {
+    try {
+        Remove-Item -Path $githubDir -Recurse -Force
+        Write-Host "Diretório removido com sucesso."
+        break
+    } catch {
+        if ($retryCount -ge $maxRetries) {
+            Write-Host "Erro ao tentar remover o diretório após várias tentativas: $_"
+            break
+        } else {
+            Write-Host "Tentativa de remoção falhou, tentando novamente em $delaySeconds segundos."
+            Start-Sleep -Seconds $delaySeconds
+            $retryCount++
+        }
+    }
 }
 write-host "Job completed"
