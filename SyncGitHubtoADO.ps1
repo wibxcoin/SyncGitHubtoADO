@@ -68,19 +68,24 @@ $retryCount = 0
 $maxRetries = 3
 $delaySeconds = 5
 while ($true) {
-    try {
-        Remove-Item -Path $githubDir -Recurse -Force
-        Write-Host "Diretório removido com sucesso."
-        break
-    } catch {
-        if ($retryCount -ge $maxRetries) {
-            Write-Host "Erro ao tentar remover o diretório após várias tentativas: $_"
+    if (Test-Path -Path $githubDir) {
+        try {
+            Remove-Item -Path $githubDir -Recurse -Force
+            Write-Host "Diretório removido com sucesso."
             break
-        } else {
-            Write-Host "Tentativa de remoção falhou, tentando novamente em $delaySeconds segundos."
-            Start-Sleep -Seconds $delaySeconds
-            $retryCount++
+        } catch {
+            if ($retryCount -ge $maxRetries) {
+                Write-Host "Erro ao tentar remover o diretório após várias tentativas: $_"
+                break
+            } else {
+                Write-Host "Tentativa de remoção falhou, tentando novamente em $delaySeconds segundos."
+                Start-Sleep -Seconds $delaySeconds
+                $retryCount++
+            }
         }
+    } else {
+        Write-Host "O diretório '$githubDir' não existe ou já foi removido."
+        break
     }
 }
 write-host "Job completed"
