@@ -1,54 +1,52 @@
 param(
-     [Parameter()]
-     [string]$ADODestinationPAT,
- 
-     [Parameter()]
-     [string]$GitHubSourcePAT,
-     
-     [Parameter()]
-     [string]$AzureRepoName,
-     
-     [Parameter()]
-     [string]$ADOCloneURL,
-     
-     [Parameter()]
-     [string]$GitHubCloneURL
- )
+    [Parameter()]
+    [string]$ADODestinationPAT,
 
-# Write your PowerShell commands here.
+    [Parameter()]
+    [string]$GitHubSourcePAT,
+    
+    [Parameter()]
+    [string]$AzureRepoName,
+    
+    [Parameter()]
+    [string]$ADOCloneURL,
+    
+    [Parameter()]
+    [string]$GitHubCloneURL
+)
+
 Write-Host ' - - - - - - - - - - - - - - - - - - - - - - - - -'
 Write-Host ' reflect Azure Devops repo changes to GitHub repo'
 Write-Host ' - - - - - - - - - - - - - - - - - - - - - - - - - '
-#$AzureRepoName = "SpeedZin"
-#$ADOCloneURL = "dev.azure.com/WibooCria/SpeedZin/_git/SpeedZin "
-#$GitHubCloneURL = "github.com/wibxcoin/speedzin-ADO.git"
+
 $stageDir = pwd | Split-Path
 Write-Host "stage Dir is : $stageDir"
-$githubDir = $stageDir +"\"+"gitHub"
+$githubDir = Join-Path $stageDir "gitHub"
 Write-Host "github Dir : $githubDir"
-$destination = $githubDir+"\"+ $AzureRepoName+".git"
-Write-Host "destination: $destination"
-#Please make sure, you remove https from azure-repo-clone-url
-$sourceURL = "https://$($GitHubSourcePAT)"+"@"+"$($GitHubCloneURL)"
+
+$sourceURL = "https://$($GitHubSourcePAT)@$($GitHubCloneURL)"
 write-host "source URL : $sourceURL"
-#Please make sure, you remove https from github-repo-clone-url
-$destURL = "https://" + $($ADODestinationPAT) +"@"+"$($ADOCloneURL)"
+$destURL = "https://$($ADODestinationPAT)@$($ADOCloneURL)"
 write-host "dest URL : $destURL"
-#Check if the parent directory exists and delete
-if((Test-Path -path $githubDir))
-{
-  Remove-Item -Path $githubDir -Recurse -force
+
+# Check if the directory exists and delete
+if (Test-Path -path $githubDir) {
+    Remove-Item -Path $githubDir -Recurse -force
 }
-if(!(Test-Path -path $githubDir))
-{
-  New-Item -ItemType directory -Path $githubDir
-  Set-Location $githubDir
-  git clone --mirror $sourceURL
+# Create the directory and clone the repo
+New-Item -ItemType directory -Path $githubDir
+Set-Location $githubDir
+git clone --mirror $sourceURL
+
+# Verify the cloned repo directory
+$clonedRepoDir = Get-ChildItem $githubDir | Where-Object { $_.PSIsContainer } | Select-Object -First 1
+if ($null -eq $clonedRepoDir) {
+    Write-Host "Cloning failed or the cloned directory is not found."
+    exit
 }
-else
-{
-  Write-Host "The given folder path $githubDir already exists";
-}
+$destination = $clonedRepoDir.FullName
+Write-Host "destination: $destination"
+
 Set-Location $destination
 Write-Output '*****Git removing remote secondary****'
 git remote rm secondary
@@ -57,12 +55,12 @@ git remote add --mirror=fetch secondary $destURL
 Write-Output '*****Git fetch origin****'
 git fetch $sourceURL
 Write-Output '*****Git push secondary****'
-#git remote set-url origin $destURLSetURL
-git push secondary  --all -f
+git push secondary --all -f
 Write-Output '**Azure Devops repo synced with Github repo**'
 Set-Location $stageDir
-if((Test-Path -path $githubDir))
-{
- Remove-Item -Path $githubDir -Recurse -force
+
+# Clean up
+if (Test-Path -path $githubDir) {
+    Remove-Item -Path $githubDir -Recurse -force
 }
 write-host "Job completed"
