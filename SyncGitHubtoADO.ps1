@@ -48,8 +48,12 @@ $destination = $clonedRepoDir.FullName
 Write-Host "destination: $destination"
 
 Set-Location $destination
-Write-Output '*****Git removing remote secondary****'
-git remote rm secondary
+
+# Verifica se o remote 'secondary' existe antes de tentar removê-lo
+if (git remote | Select-String -Pattern "secondary") {
+    git remote rm secondary
+}
+
 Write-Output '*****Git remote add****'
 git remote add --mirror=fetch secondary $destURL
 Write-Output '*****Git fetch origin****'
@@ -59,8 +63,10 @@ git push secondary --all -f
 Write-Output '**Azure Devops repo synced with Github repo**'
 Set-Location $stageDir
 
-# Clean up
-if (Test-Path -path $githubDir) {
+# Tente remover o diretório
+try {
     Remove-Item -Path $githubDir -Recurse -force
+} catch {
+    Write-Host "Erro ao tentar remover o diretório: $_"
 }
 write-host "Job completed"
