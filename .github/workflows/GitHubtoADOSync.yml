@@ -8,7 +8,7 @@ jobs:
     runs-on: windows-2019
     steps:
       - name: Check out repo        
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
       - run: |
            $ListObject = GC -Path "$($env:GITHUB_WORKSPACE)\GitHubRepoList.json" | ConvertFrom-Json
            foreach ($object in $ListObject.RepoList){
