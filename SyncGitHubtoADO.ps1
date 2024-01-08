@@ -3,13 +3,13 @@ param(
      [string]$GitHubDestinationPAT,
  
      [Parameter()]
-     [string]$GitHubSourcePAT,
+     [string]$ADOSourcePAT,
      
      [Parameter()]
      [string]$GitHubRepoName,
      
      [Parameter()]
-     [string]$GitHubCloneURL,
+     [string]$ADOCloneURL,
      
      [Parameter()]
      [string]$GitHubCloneURL
@@ -20,7 +20,7 @@ Write-Host ' - - - - - - - - - - - - - - - - - - - - - - - - -'
 Write-Host ' reflect Azure Devops repo changes to GitHub repo'
 Write-Host ' - - - - - - - - - - - - - - - - - - - - - - - - - '
 #$AzureRepoName = "SpeedZin"
-#$GitHubCloneURL = "dev.azure.com/WibooCria/SpeedZin/_git/SpeedZin "
+#$ADOCloneURL = "dev.azure.com/WibooCria/SpeedZin/_git/SpeedZin "
 #$GitHubCloneURL = "github.com/wibxcoin/speedzin-ADO.git"
 $stageDir = pwd | Split-Path
 Write-Host "stage Dir is : $stageDir"
@@ -32,7 +32,7 @@ Write-Host "destination: $destination"
 $sourceURL = "https://$($GitHubSourcePAT)"+"@"+"$($GitHubCloneURL)"
 write-host "source URL : $sourceURL"
 #Please make sure, you remove https from github-repo-clone-url
-$destURL = "https://" + $($GitHubDestinationPAT) +"@"+"$($GitHubCloneURL)"
+$destURL = "https://" + $($ADODestinationPAT) +"@"+"$($ADOCloneURL)"
 write-host "dest URL : $destURL"
 #Check if the parent directory exists and delete
 if((Test-Path -path $githubDir))
